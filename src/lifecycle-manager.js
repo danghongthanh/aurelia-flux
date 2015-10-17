@@ -56,13 +56,13 @@ export class LifecycleManager {
     }
 
     static interceptHtmlBehaviorResource() {
-      if(HtmlBehaviorResource === undefined || typeof HtmlBehaviorResource.prototype.analyze !== 'function') {
+      if(HtmlBehaviorResource === undefined || typeof HtmlBehaviorResource.prototype.initialize !== 'function') {
         throw new Error('Unsupported version of HtmlBehaviorResource');
       }
 
-      var analyzeImpl = HtmlBehaviorResource.prototype.analyze;
+      var analyzeImpl = HtmlBehaviorResource.prototype.initialize;
 
-      HtmlBehaviorResource.prototype.analyze = function(...args) {
+      HtmlBehaviorResource.prototype.initialize = function(...args) {
         let target = args[1];        
         if(    target
             && target.prototype
@@ -78,17 +78,17 @@ export class LifecycleManager {
     }
 
     static interceptClassActivator() {
-        if(ClassActivator.instance === undefined || ClassActivator.instance.invoke === undefined) {
-            throw new Error('Unsupported version of ClassActivator');
+        if(FactoryActivator.instance === undefined || FactoryActivator.instance.invoke === undefined) {
+            throw new Error('Unsupported version of FactoryActivator');
         }
 
-        var invokeImpl = ClassActivator.instance.invoke;
-        ClassActivator.instance.invoke = function(...invokeArgs) {
+        var invokeImpl = FactoryActivator.instance.invoke;
+        FactoryActivator.instance.invoke = function(...invokeArgs) {
             var args = invokeArgs[1],
                 instance;                
 
             if(Array.isArray(args) === false) {
-                throw new Error('Unsupported version of ClassActivator');
+                throw new Error('Unsupported version of FactoryActivator');
             }
             
             var dispatcher = args.find((item) => { return item instanceof Dispatcher; });
